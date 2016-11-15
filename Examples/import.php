@@ -1,32 +1,4 @@
 <?php
-/**
- * PHPExcel
- *
- * Copyright (C) 2006 - 2014 PHPExcel
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @category   PHPExcel
- * @package    PHPExcel
- * @copyright  Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
- * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    1.8.0, 2014-03-02
- */
-
-//displaying errors
-error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
@@ -35,9 +7,7 @@ define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
 date_default_timezone_set('Europe/London');
 
 //linking database
-$link=mysql_connect('localhost','root','root') or die("ERROR Connecting MySQL");
-$db=mysql_select_db('phpexcel',$link) or die("ERROR Connecting Database");
-
+require_once 'db_connect.php';
 
 /** Include PHPExcel_IOFactory */
 require_once dirname(__FILE__) . '/../Classes/PHPExcel/IOFactory.php';
@@ -119,15 +89,21 @@ if(!is_float($Eval))
 
 //checking for existing values
 $result= mysql_query("SELECT id FROM questions where title='$Aval' AND topicId='$Cval'",$link) or die(mysql_error());
+// var_dump($result);
+$result = mysql_fetch_array($result);
+// var_dump($result);
 if($result)
 {
-	echo "This question already exists<br>";
-	echo $Aval." ".$Cval;
-	break;
+	// echo $result;
+	echo "This question already exists: ";
+	echo $Aval." ".$Cval,'<br>' ;
 }
 
 //seeding into the DB
-$result=mysql_query("INSERT INTO questions VALUES ('','$Aval','$Bval','$Cval','$Dval','$Eval')",$link) or die(mysql_error());
-
+else
+{
+	$result=mysql_query("INSERT INTO questions VALUES ('','$Aval','$Bval','$Cval','$Dval','$Eval')",$link) or die(mysql_error());
+	echo $i-1, " Record Added<br>";
+}
 $i++;
 }while(!empty($Aval));

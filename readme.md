@@ -14,7 +14,7 @@ Prerequisites
 
 Excel to DB
 --------
-> Create an Excel sheet and name it as file.xlxs
+> Create an Excel sheet in Examples folder and name it as file.xlxs
 > **Currently, only certain field names are allowed, these are:**
 > - title
 > - details

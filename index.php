@@ -37,7 +37,44 @@
                 <span id="export_result"></span>
 	    	</div>
 	    	<div class="col-xs-6" style="height: 100%;">
+                <center>
+                <form action="#"" method="post" enctype="multipart/form-data">
+                    Select Excel (.xlsx) file to upload: 
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Upload File" name="submit">
+                </form>
+                </center>
+                <span>
+                    <?php
+                    if(isset($_POST['submit'])):
+                        $target_dir = "Examples/";
+                        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+                        $uploadOk = 1;
+                        $FileType = pathinfo($target_file,PATHINFO_EXTENSION);
+                        // Allow certain file formats
+                        if(!($FileType == "xlsx" || $FileType =="xls")) {
+                            echo "Sorry, only xlsx files are allowed.";
+                            $uploadOk = 0;
+                        }
+                        // Check if $uploadOk is set to 0 by an error
+                        if ($uploadOk == 0) {
+                            echo "Sorry, your file was not uploaded.";
+                        // if everything is ok, try to upload file
+                        } else {
+                            echo $target_file;
+                            if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"],"Examples/file.xlsx")) {
+                                echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
+                            } else {
+                                echo "Sorry, there was an error uploading your file.";
+                            }
+                        }
+                    ?>
+                </span>
+                <br><br><br>
 	    		<center><button type="button" class="btn btn-lg btn-primary" id="import">Import Excel to DB</button></center>
+                <?php 
+                    endif;
+                ?>
                 <span id="import_result"></span>
 	    	</div>    	
     	</div>

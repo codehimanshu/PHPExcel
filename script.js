@@ -1,8 +1,12 @@
 $(document).ready(function(){
-	$("#export").click(function(){
+	$(".export").click(function(){
+		var table = $(this).attr('id');
 		$.ajax({
-			type: 'GET',
+			type: 'POST',
 			url: 'Examples/export.php',
+			data: {
+				'table':table, 
+			},
 			success: function(data){
 				$("#export_result").html(data);
 			}

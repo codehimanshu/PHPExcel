@@ -32,10 +32,26 @@
 
     <div class="container" style="height: 87%; position: fixed; width: 100%;">
     	<div clas="row" style="height: 100%;">
-	    	<div class="col-xs-6" style="border-right: 4px solid grey; height: 100%">
-	    		<center><button type="button" class="btn btn-lg btn-primary" id="export">Export DB to Excel</button></center>
+    	   	<div class="col-xs-6" style="border-right: 4px solid grey; height: 100%; overflow: scroll;">
+                <?php
+                    require_once 'Examples/db_connect.php';
+                    $result = mysql_query("SHOW TABLES",$link);
+                    if($result)
+                    {
+                        echo "Select Table:<br>";
+                        while($table = mysql_fetch_assoc($result))
+                        {
+                            echo "<center><button type=button class='export btn btn-lg btn-primary' id='".$table["Tables_in_phpexcel"]."'>".$table["Tables_in_phpexcel"]."</button></center><br>";
+                        }
+                    }
+                    else
+                        echo "No tables found";
+                ?>
+
+	    		<!-- <center><button type="button" class="btn btn-lg btn-primary" id="export">Export DB to Excel</button></center> -->
                 <span id="export_result"></span>
 	    	</div>
+
 	    	<div class="col-xs-6" style="height: 100%;">
                 <center>
                 <form action="#"" method="post" enctype="multipart/form-data">

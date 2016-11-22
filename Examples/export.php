@@ -26,37 +26,66 @@ $objPHPExcel->getProperties()->setCreator("Himanshu Agrawal")
 							 ->setKeywords("office PHPExcel php")
 							 ->setCategory("Test result file");
 
-//create template
-echo date('H:i:s') , "Creating Template" , EOL;
-$objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('A1', 'id')
-            ->setCellValue('B1', 'title')
-            ->setCellValue('C1', 'details')
-            ->setCellValue('D1', 'topicId')
-            ->setCellValue('E1', 'ques_level')
-            ->setCellValue('F1', 'ques_type');
+//getting table structure and creating template
+echo date('H:i:s') , "Creating Template" , EOL;							 
+$table = $_POST['table'];
+$structure = mysql_query("DESCRIBE ".$table,$link) or die(mysql_error());
+$columns = [];
+// var_dump($columns);
+if($structure)
+{
+	$col = 'A';
+	$col_no = 0;
+	echo "Fields found: ";
+	while($field = mysql_fetch_assoc($structure))
+	{
+		$objPHPExcel->setActiveSheetIndex(0)->setCellValue($col.'1',$field["Field"]);
+		echo $field["Field"].", ";
+		// echo $col_no;
+		array_push($columns,$field['Field']);
+		$col_no++;
+		$col++;
+	}
+	echo "<br>";
+}
+else
+	return "Failure";
 
-
+$total_columns = $col_no-1;
 //writing records
 $i=2;
 echo date('H:i:s') , "Fetching Records" , EOL;
-$results = mysql_query('SELECT * FROM questions') or die(mysql_error());
+$results = mysql_query('SELECT * FROM '.$table) or die(mysql_error());
 if($results)
 {
 	while($result = mysql_fetch_assoc($results))
 	{
-		$objPHPExcel->setActiveSheetIndex(0)
-		->setCellValue('A'.$i,$result['id'])
-		->setCellValue('B'.$i,$result['title'])
-		->setCellValue('C'.$i,$result['details'])
-		->setCellValue('D'.$i,$result['topicId'])
-		->setCellValue('E'.$i,$result['ques_level'])
-		->setCellValue('F'.$i,$result['ques_type']);
+		// var_dump($result);
+		$col_no = 0;
+		$col = 'A';
+		// echo $total_columns;
+		while($col_no <= $total_columns)
+		{
+			// echo "DD<br>";
+			// var_dump($columns);
+			// echo $columns[$col_no];
+			// echo $col_no;
+			$objPHPExcel->setActiveSheetIndex(0)->setCellValue($col.$i,$result[$columns[$col_no]]);
+			$col++;
+			$col_no++;
+		}
+		// $objPHPExcel->setActiveSheetIndex(0)
+		// ->setCellValue('A'.$i,$result['id'])
+		// ->setCellValue('B'.$i,$result['title'])
+		// ->setCellValue('C'.$i,$result['details'])
+		// ->setCellValue('D'.$i,$result['topicId'])
+		// ->setCellValue('E'.$i,$result['ques_level'])
+		// ->setCellValue('F'.$i,$result['ques_type']);
 		$i++;
 	}
 }
 else
- 	die("Database Empty");
+ 	die("Table Empty");
 
 // Rename worksheet
 echo date('H:i:s') , " Rename worksheet" , EOL;
